@@ -28,8 +28,9 @@ class Parser:
     def create_file_with_html(cls, html):
         with open("index.html", "w") as file:
             file.write(html)
+
     @classmethod
-    def get_news(cls, file: str):
+    def get_news(cls, file: str) -> List[Dict]:
         with open(f'{file}') as file:
             src = file.read()
         soup = bs(src)
@@ -37,18 +38,18 @@ class Parser:
                                      class_="swiper-container swiper-3 swiper-container-initialized swiper-container-horizontal").find_all(
             'a')
         news: List[Dict] = []
+
+        def get_url(str):
+            pattern = "(?:\(['\"]?)(.*?)(?:['\"]?\))"
+            url = re.search(pattern, str).group(1)
+
         for i in all_news_on_page:
             style_with_url = i.find('div', class_="news-card__image")['style']
-            pattern = "(?:\(['\"]?)(.*?)(?:['\"]?\))"
-            url = re.search(pattern, style_with_url).group(1)
             dict = {'title': i.find('div', class_="news-card__caption").text,
-                    'url': url,
+                    'url': get_url(style_with_url),
                     'date': i.find('div', class_="news-card__date").text}
             news.append(dict)
         return news
 
 
-# html = Parser.get_soup()
-# Parser.create_file_with_html(html)
 print(Parser.get_news('index.html'))
-
